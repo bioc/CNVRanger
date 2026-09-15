@@ -67,7 +67,7 @@
 #' are unlikely to occur by chance alone.  
 #' }
 #'
-#' @param grl A \code{\linkS4class{GRangesList}}.
+#' @param grl A \code{\linkS4class[GenomicRanges]{GRangesList}}.
 #' @param mode Character. Should population ranges be computed based on regional
 #' density ("density") or reciprocal overlap ("RO"). See Details.
 #' @param density Numeric. Defaults to 0.1. 
@@ -89,7 +89,7 @@
 #' threshold they are ignored.    
 #' @param est.recur Logical. Should recurrence of regions be assessed via a 
 #' permutation test? Defaults to \code{FALSE}. See Details.  
-#' @return A \code{\linkS4class{GRanges}} object containing the summarized
+#' @return A \code{\linkS4class[GenomicRanges]{GRanges}} object containing the summarized
 #' CNV ranges. 
 #'
 #' @references 
@@ -103,7 +103,7 @@
 #' in cancer: methodology and application to glioma. PNAS, 104(50):20007-12.
 #'
 #' @author Ludwig Geistlinger, Martin Morgan
-#' @seealso \code{\link{findOverlaps}}
+#' @seealso \code{\link[GenomicRanges]{findOverlaps}}
 #' 
 #' @examples
 #'
@@ -174,16 +174,18 @@ populationRanges <- function(grl, mode=c("density", "RO"),
 #'
 #' Illustrates summarized CNV regions along a chromosome.
 #'
-#' @param regs A \code{\linkS4class{GRanges}}. Typically the result of 
+#' @param regs A \code{\linkS4class[GenomicRanges]{GRanges}}. Typically the result of 
 #' \code{\link{populationRanges}} with \code{est.recur=TRUE}.
 #' @param genome Character. A valid UCSC genome assembly ID such as 'hg19' or 'bosTau6'.
 #' @param chr Character. A UCSC-style chromosome name such as 'chr1'. 
 #' @param pthresh Numeric. Significance threshold for recurrence. Defaults to 0.05.
+#' @param ...  Additional arguments passed to \code{Gviz::plotTracks}. This is useful 
+#' for plotting a chromosome with thousands of CNV regions, as it lets users zoom into specific 
+#' regions of a chromosome using the \code{from} and \code{to} arguments of \code{Gviz::plotTracks}.
 #' @return None. Plots to a graphics device.
 #'
 #' @author Ludwig Geistlinger
 #' @seealso \code{Gviz::plotTracks}
-#' 
 #' @examples
 #'
 #' # read in example CNV calls
@@ -202,7 +204,7 @@ populationRanges <- function(grl, mode=c("density", "RO"),
 #' plotRecurrentRegions(cnvrs, genome="bosTau6", chr="chr1")
 #'
 #' @export
-plotRecurrentRegions <- function(regs, genome, chr, pthresh=0.05)
+plotRecurrentRegions <- function(regs, genome, chr, pthresh=0.05, ...)
 {
     if (!requireNamespace("Gviz", quietly = TRUE))
         stop(paste("Required package \'Gviz\' not found.", 
@@ -212,54 +214,48 @@ plotRecurrentRegions <- function(regs, genome, chr, pthresh=0.05)
     colB <- "gray94"
     tlevels <- c("gain", "loss", "both")
 
-    chr.regs <- subset(regs, seqnames == chr)
-    if(!length(chr.regs)) "No CNV regions to plot on the specified chromosome"
+    # check whether the input regions contain the required annotations    
+    rel.cols <- c("freq", "type", "pvalue") 
+    if(!all(rel.cols %in% names(mcols(regs)))) 
+        stop("Required columns 'freq', 'type', and 'pvalue' not found in the CNV regions")
 
-    itrack <- Gviz::IdeogramTrack(genome=genome, chr=chr, fontsize=15)
+    # check whether the chromosome is present in the CNV regions
+    stopifnot(chr %in% seqlevels(regs))
+    chr.regs <- regs[seqnames(regs) == chr]
+    if(!length(chr.regs)) stop("No CNV regions to plot on the specified chromosome")
+
+    itrack <- try(Gviz::IdeogramTrack(genome=genome, chromosome=chr, fontsize=15), silent=TRUE)
+    if(inherits(itrack, "try-error"))
+    {
+        warning("Failed to create ideogram track. Proceeding without it.")
+        itrack <- NULL
+    }
+    
     gtrack <- Gviz::GenomeAxisTrack(littleTicks=TRUE, fontsize=15)
 
-    gain.regs <- subset(chr.regs, type=="gain")
-    tlist <- list()
-    if(length(gain.regs))
-    {
-        gain.track <- Gviz::DataTrack(gain.regs, data=gain.regs$freq, 
-                                type="h", groups=factor("gain", levels=tlevels), 
-                                name="#samples", cex.title=1, cex.axis=1,
-                                font.axis=2, col.title=colM, col.axis=colM, 
-                                background.title=colB, legend=TRUE)
-        tlist <- c(tlist, gain.track)
-    }
+    # create a DataTrack for each CNV type (gain, loss, both)
+    regs.per.type <- split(chr.regs, chr.regs$type)
+    regs.per.type <- regs.per.type[intersect(tlevels, names(regs.per.type))]
 
-    loss.regs <- subset(chr.regs, type=="loss")
-    if(length(loss.regs))
-    {
-        loss.track <- Gviz::DataTrack(loss.regs, data=loss.regs$freq, 
-                                type="h", groups=factor("loss", levels=tlevels), 
-                                name="#samples", cex.title=1, cex.axis=1,
-                                font.axis=2, col.title=colM, col.axis=colM, 
-                                background.title=colB, legend=TRUE)
-        tlist <- c(tlist, loss.track)
-    }
+    .createTrack <- function(ty)
+        Gviz::DataTrack(regs.per.type[[ty]], data=regs.per.type[[ty]]$freq,
+                        type="h", groups=factor(ty, levels=tlevels),
+                        name="#samples", cex.title=1, cex.axis=1, font.axis=2,
+                        col.title=colM, col.axis=colM,
+                        background.title=colB, legend=TRUE)
+    
 
-    both.regs <- subset(chr.regs, type=="both")
-    if(length(both.regs))
-    {
-        both.track <- Gviz::DataTrack(both.regs, data=both.regs$freq, 
-                                type="h", groups=factor("both", levels=tlevels), 
-                                name="#samples", cex.title=1, cex.axis=1,
-                                font.axis=2, col.title=colM, col.axis=colM, 
-                                background.title=colB, legend=TRUE)
-        tlist <- c(tlist, both.track)
-    }
+    tlist <- lapply(names(regs.per.type), .createTrack)
 
+    # overlay the tracks for the different CNV types
     otrack <- Gviz::OverlayTrack(trackList = tlist, background.title=colB)
-    ylim <- vapply(tlist, function(tr) range(S4Vectors::values(tr)), numeric(2))
-    ylim <- extendrange(range(as.vector(ylim)))
+    ylim <- extendrange(c(0, max(chr.regs$freq)))
 
+    # combine all tracks into a list for plotting
     tracklist <- list(itrack, gtrack, otrack)
 
-    # significant regions
-    sig.regs <- subset(chr.regs, pvalue < pthresh)
+    # add a track for significant regions (if any)
+    sig.regs <- chr.regs[chr.regs$pvalue < pthresh]
     if(length(sig.regs))
     {
         atrack <- Gviz::AnnotationTrack(sig.regs, name="recur", cex.title=1, 
@@ -268,7 +264,8 @@ plotRecurrentRegions <- function(regs, genome, chr, pthresh=0.05)
         tracklist <- c(tracklist, atrack)
     }
 
-    Gviz::plotTracks(tracklist, ylim=ylim)
+    # plot the tracks
+    Gviz::plotTracks(tracklist, ylim=ylim, ...)
 }
 
 #' OncoPrint plot for CNV regions
@@ -276,10 +273,10 @@ plotRecurrentRegions <- function(regs, genome, chr, pthresh=0.05)
 #' Illustrates overlaps between CNV calls and genomic features across a 
 #' sample population.
 #'
-#' @param calls Either a \code{\linkS4class{GRangesList}} or
-#' \code{\linkS4class{RaggedExperiment}} storing the individual CNV calls for
+#' @param calls Either a \code{\linkS4class[GenomicRanges]{GRangesList}} or
+#' \code{\linkS4class[RaggedExperiment]{RaggedExperiment}} storing the individual CNV calls for
 #' each sample.
-#' @param features A \code{\linkS4class{GRanges}} object containing
+#' @param features A \code{\linkS4class[GenomicRanges]{GRanges}} object containing
 #' the genomic features of interest, typically genes. Feature names
 #' are either expected as a meta-column \code{symbol} or as the \code{names}
 #' of the object. 
@@ -288,7 +285,7 @@ plotRecurrentRegions <- function(regs, genome, chr, pthresh=0.05)
 #' calls for one sample in that region. Defaults to \code{.largest}, which
 #' assigns the CN state of the call that covers the largest part of the CNV
 #' region tested. A user-defined function that is passed on to
-#' \code{\link{qreduceAssay}} can also be provided for customized behavior.
+#' \code{\link[RaggedExperiment]{qreduceAssay}} can also be provided for customized behavior.
 #' @param top.features integer. Restricts the number of features for plotting to
 #' features experiencing highest alteration frequency. Defaults to 25. 
 #' Use \code{-1} to display all features.

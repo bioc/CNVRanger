@@ -20,19 +20,19 @@ cnvEQTL(
 )
 }
 \arguments{
-\item{cnvrs}{A \code{\linkS4class{GRanges}} or character object containing
+\item{cnvrs}{A \code{\linkS4class[GenomicRanges]{GRanges}} or character object containing
 the summarized CNV regions as e.g. obtained with \code{\link{populationRanges}}.
 Alternatively, the assay name if the 'data' argument is provided.}
 
-\item{calls}{Either a \code{\linkS4class{GRangesList}} or
-\code{\linkS4class{RaggedExperiment}} storing the individual CNV calls for
+\item{calls}{Either a \code{\linkS4class[GenomicRanges]{GRangesList}} or
+\code{\linkS4class[RaggedExperiment]{RaggedExperiment}} storing the individual CNV calls for
 each sample. Alternatively, the assay name if 'data' is provided.}
 
-\item{rcounts}{A \code{\linkS4class{RangedSummarizedExperiment}} or
+\item{rcounts}{A \code{\linkS4class[SummarizedExperiment]{RangedSummarizedExperiment}} or
 character name storing either the raw RNA-seq read counts in a rectangular
 fashion (genes x samples). Alternatively, the assay name if 'data' is provided.}
 
-\item{data}{(optional) A \code{MultiAssayExperiment} object 
+\item{data}{(optional) A \code{\linkS4class[MultiAssayExperiment]{MultiAssayExperiment}} object 
 with `cnvrs`, `calls`, and `rcounts` arguments corresponding to assay names.}
 
 \item{window}{Numeric or Character. Size of the genomic window in base pairs
@@ -47,7 +47,7 @@ CN state in a CNV region when there are multiple (potentially conflicting)
 calls for one sample in that region. Defaults to \code{.largest}, which
 assigns the CN state of the call that covers the largest part of the CNV
 region tested. A user-defined function that is passed on to
-\code{\link{qreduceAssay}} can also be provided for customized behavior.}
+\code{\link[RaggedExperiment]{qreduceAssay}} can also be provided for customized behavior.}
 
 \item{min.samples}{Integer. Minimum number of samples with at least one call
 overlapping the CNV region tested. Defaults to 10. See details.}
@@ -65,13 +65,13 @@ Defaults to \code{"BH"}.}
 \item{filter.by.expr}{Logical. Include only genes with
 sufficiently large counts in the DE analysis? If TRUE, excludes genes not 
 satisfying a minimum number of read counts across samples using the 
-\code{\link{filterByExpr}} function from the edgeR package.
+\code{\link[edgeR]{filterByExpr}} function from the edgeR package.
 Defaults to TRUE.}
 
 \item{verbose}{Logical. Display progress messages? Defaults to \code{FALSE}.}
 }
 \value{
-A \code{\linkS4class{DataFrame}} containing measures of association for 
+A \code{\linkS4class[S4Vectors]{DataFrame}} containing measures of association for 
 each CNV region and each gene tested in the genomic window around the CNV region.
 }
 \description{
@@ -144,13 +144,13 @@ Geistlinger et al. (2018) Widespread modulation of gene expression
 by copy number variation in skeletal muscle. Sci Rep, 8(1):1399.
 }
 \seealso{
-\code{\link{findOverlaps}} to find overlaps between sets of genomic
+\code{\link[GenomicRanges]{findOverlaps}} to find overlaps between sets of genomic
 regions,
 
-\code{\link{qreduceAssay}} to summarize ragged genomic location data
+\code{\link[RaggedExperiment]{qreduceAssay}} to summarize ragged genomic location data
 in defined genomic regions,
 
-\code{\link{glmQLFit}} and \code{\link{glmQLFTest}} to conduct negative
+\code{\link[edgeR]{glmQLFit}} and \code{\link[edgeR]{glmQLFTest}} to conduct negative
 binomial generalized linear models for RNA-seq read count data.
 }
 \author{

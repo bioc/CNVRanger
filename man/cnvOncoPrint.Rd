@@ -14,11 +14,11 @@ cnvOncoPrint(
 )
 }
 \arguments{
-\item{calls}{Either a \code{\linkS4class{GRangesList}} or
-\code{\linkS4class{RaggedExperiment}} storing the individual CNV calls for
+\item{calls}{Either a \code{\linkS4class[GenomicRanges]{GRangesList}} or
+\code{\linkS4class[RaggedExperiment]{RaggedExperiment}} storing the individual CNV calls for
 each sample.}
 
-\item{features}{A \code{\linkS4class{GRanges}} object containing
+\item{features}{A \code{\linkS4class[GenomicRanges]{GRanges}} object containing
 the genomic features of interest, typically genes. Feature names
 are either expected as a meta-column \code{symbol} or as the \code{names}
 of the object.}
@@ -28,7 +28,7 @@ CN state in a CNV region when there are multiple (potentially conflicting)
 calls for one sample in that region. Defaults to \code{.largest}, which
 assigns the CN state of the call that covers the largest part of the CNV
 region tested. A user-defined function that is passed on to
-\code{\link{qreduceAssay}} can also be provided for customized behavior.}
+\code{\link[RaggedExperiment]{qreduceAssay}} can also be provided for customized behavior.}
 
 \item{top.features}{integer. Restricts the number of features for plotting to
 features experiencing highest alteration frequency. Defaults to 25. 

@@ -7,10 +7,10 @@
 plotEQTL(cnvr, genes, genome, cn = "CN1", cex = 0.8)
 }
 \arguments{
-\item{cnvr}{A \code{\linkS4class{GRanges}} of length 1, containing the genomic
+\item{cnvr}{A \code{\linkS4class[GenomicRanges]{GRanges}} of length 1, containing the genomic
 coordinates of the CNV region of interest.}
 
-\item{genes}{\code{\linkS4class{GRanges}} containing genes in the neighborhood
+\item{genes}{\code{\linkS4class[GenomicRanges]{GRanges}} containing genes in the neighborhood
 of the CNV region of interest.}
 
 \item{genome}{Character. A valid UCSC genome assembly ID such as 'hg19' or 'bosTau6'.}

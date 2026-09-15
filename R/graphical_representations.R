@@ -11,9 +11,10 @@
 #'
 #' @param all.paths Object returned from \code{CreateFolderTree} function with 
 #' the working folder tree
-#' @param regions \code{\linkS4class{GRanges}} as returned by \code{\link{cnvGWAS}}  
+#' @param regions \code{\linkS4class[GenomicRanges]{GRanges}} as returned by \code{\link{cnvGWAS}}  
 #' @param chr.size.order \code{\link{data.frame}} with two columns: (i) 'chr': chromosome names (character),
-#' and (ii) 'size': length of the chromosomes in bp (integer). A \code{\linkS4class{GRanges}} containing one
+#' and (ii) 'size': length of the chromosomes in bp (integer). 
+#' A \code{\linkS4class[GenomicRanges]{GRanges}} containing one
 #' chromosome per range can be used instead (the chromosomes should be in the expected order).
 #' @param plot.pdf Logical plot a to pdf file
 #' @return Plots to graphics device.

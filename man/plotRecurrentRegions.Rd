@@ -4,7 +4,7 @@
 \alias{plotRecurrentRegions}
 \title{Plot recurrent CNV regions}
 \usage{
-plotRecurrentRegions(regs, genome, chr, pthresh = 0.05)
+plotRecurrentRegions(regs, genome, chr, pthresh = 0.05, ...)
 }
 \arguments{
 \item{regs}{A \code{\linkS4class{GRanges}}. Typically the result of 
@@ -15,6 +15,10 @@ plotRecurrentRegions(regs, genome, chr, pthresh = 0.05)
 \item{chr}{Character. A UCSC-style chromosome name such as 'chr1'.}
 
 \item{pthresh}{Numeric. Significance threshold for recurrence. Defaults to 0.05.}
+
+\item{...}{Additional arguments passed to \code{Gviz::plotTracks}. This is useful 
+for plotting a chromosome with thousands of CNV regions, as it lets users zoom into specific 
+regions of a chromosome using the \code{from} and \code{to} arguments of \code{Gviz::plotTracks}.}
 }
 \value{
 None. Plots to a graphics device.

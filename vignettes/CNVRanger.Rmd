@@ -26,6 +26,7 @@ Report issues on
 <https://github.com/waldronlab/CNVRanger/issues>
 
 ```{r setup, echo=FALSE}
+options(knitr.graphics.error = FALSE)
 suppressPackageStartupMessages({ 
     library(CNVRanger)
     library(AnnotationHub)

@@ -170,8 +170,9 @@ cnvGWAS <- function(phen.info, n.cor = 1, min.sim = 0.95, freq.cn = 0.01, snp.ma
 #' phenotypes include the string 'INEXISTENT' instead the path for a file.
 #' @param cnv.out.loc Path(s) to the CNV analysis output (i.e. PennCNV output, 
 #' SNP-chip general format or sequencing general format). It is also possible to
-#' use a \code{\linkS4class{RaggedExperiment}} or a \code{\linkS4class{GRangesList}} 
-#' object instead if the run includes only one population.
+#' use a \code{\linkS4class[RaggedExperiment]{RaggedExperiment}} or a 
+#' \code{\linkS4class[GenomicRanges]{GRangesList}} object instead if the run includes
+#' only one population.
 #' @param map.loc Path to the probe map (e.g. used in PennCNV analysis). Column 
 #' names containing probe name, chromosome and coordinate must be named as: Name, 
 #' Chr and Position. Tab delimited. If NULL, artificial probes will be generated 

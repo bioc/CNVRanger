@@ -42,16 +42,16 @@
 #' significance level such as 0.01 is typically recommended (due to power
 #' considerations and to avoid detection of spurious effects).
 #'
-#' @param cnvrs A \code{\linkS4class{GRanges}} or character object containing
+#' @param cnvrs A \code{\linkS4class[GenomicRanges]{GRanges}} or character object containing
 #' the summarized CNV regions as e.g. obtained with \code{\link{populationRanges}}.
 #' Alternatively, the assay name if the 'data' argument is provided.
-#' @param calls Either a \code{\linkS4class{GRangesList}} or
-#' \code{\linkS4class{RaggedExperiment}} storing the individual CNV calls for
+#' @param calls Either a \code{\linkS4class[GenomicRanges]{GRangesList}} or
+#' \code{\linkS4class[RaggedExperiment]{RaggedExperiment}} storing the individual CNV calls for
 #' each sample. Alternatively, the assay name if 'data' is provided.
-#' @param rcounts A \code{\linkS4class{RangedSummarizedExperiment}} or
+#' @param rcounts A \code{\linkS4class[SummarizedExperiment]{RangedSummarizedExperiment}} or
 #' character name storing either the raw RNA-seq read counts in a rectangular
 #' fashion (genes x samples). Alternatively, the assay name if 'data' is provided.
-#' @param data (optional) A \code{MultiAssayExperiment} object 
+#' @param data (optional) A \code{\linkS4class[MultiAssayExperiment]{MultiAssayExperiment}} object 
 #' with `cnvrs`, `calls`, and `rcounts` arguments corresponding to assay names.
 #' @param window Numeric or Character. Size of the genomic window in base pairs
 #' by which each CNV region is extended up- and downstream. This determines which
@@ -64,7 +64,7 @@
 #' calls for one sample in that region. Defaults to \code{.largest}, which
 #' assigns the CN state of the call that covers the largest part of the CNV
 #' region tested. A user-defined function that is passed on to
-#' \code{\link{qreduceAssay}} can also be provided for customized behavior.
+#' \code{\link[RaggedExperiment]{qreduceAssay}} can also be provided for customized behavior.
 #' @param min.samples Integer. Minimum number of samples with at least one call
 #' overlapping the CNV region tested. Defaults to 10. See details.
 #' @param min.state.freq Integer. Minimun number of samples in each CNV state
@@ -77,19 +77,19 @@
 #' @param filter.by.expr Logical. Include only genes with
 #' sufficiently large counts in the DE analysis? If TRUE, excludes genes not 
 #' satisfying a minimum number of read counts across samples using the 
-#' \code{\link{filterByExpr}} function from the edgeR package.
+#' \code{\link[edgeR]{filterByExpr}} function from the edgeR package.
 #' Defaults to TRUE.
 #' @param verbose Logical. Display progress messages? Defaults to \code{FALSE}.
-#' @return A \code{\linkS4class{DataFrame}} containing measures of association for 
+#' @return A \code{\linkS4class[S4Vectors]{DataFrame}} containing measures of association for 
 #' each CNV region and each gene tested in the genomic window around the CNV region.
 #' @author Ludwig Geistlinger
-#' @seealso \code{\link{findOverlaps}} to find overlaps between sets of genomic
+#' @seealso \code{\link[GenomicRanges]{findOverlaps}} to find overlaps between sets of genomic
 #' regions,
 #'
-#' \code{\link{qreduceAssay}} to summarize ragged genomic location data
+#' \code{\link[RaggedExperiment]{qreduceAssay}} to summarize ragged genomic location data
 #' in defined genomic regions,
 #'
-#' \code{\link{glmQLFit}} and \code{\link{glmQLFTest}} to conduct negative
+#' \code{\link[edgeR]{glmQLFit}} and \code{\link[edgeR]{glmQLFTest}} to conduct negative
 #' binomial generalized linear models for RNA-seq read count data.
 #'
 #' @references Geistlinger et al. (2018) Widespread modulation of gene expression
@@ -224,9 +224,9 @@ cnvEQTL <- function(cnvrs, calls, rcounts, data,
 #'
 #' Illustrates differential expression of genes in the neighborhood of a CNV.
 #'
-#' @param cnvr A \code{\linkS4class{GRanges}} of length 1, containing the genomic
+#' @param cnvr A \code{\linkS4class[GenomicRanges]{GRanges}} of length 1, containing the genomic
 #' coordinates of the CNV region of interest.
-#' @param genes \code{\linkS4class{GRanges}} containing genes in the neighborhood
+#' @param genes \code{\linkS4class[GenomicRanges]{GRanges}} containing genes in the neighborhood
 #' of the CNV region of interest.
 #' @param genome Character. A valid UCSC genome assembly ID such as 'hg19' or 'bosTau6'.
 #' @param cn Character. Copy number state of interest.
